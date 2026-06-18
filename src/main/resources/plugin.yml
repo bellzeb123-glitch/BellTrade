@@ -1,0 +1,86 @@
+name: BellTrade
+version: '1.26.1.2'
+main: pl.bell.trade.BellTrade
+api-version: '1.21'
+description: Player market, secure trade and smart sell shop with built-in economy
+authors: [Bellzeb]
+libraries:
+  - org.xerial:sqlite-jdbc:3.46.0.0
+
+softdepend:
+  - PlaceholderAPI
+  - BellLands
+
+commands:
+  belltrade:
+    description: BellTrade main command
+    usage: /btrade [admin|lang|reload]
+    aliases: [btrade]
+  balance:
+    description: Check balance
+    usage: /balance [player]
+    aliases: [bal, money]
+  pay:
+    description: Pay another player
+    usage: /pay <player> <amount>
+  baltop:
+    description: Richest players leaderboard
+    usage: /baltop [page]
+    aliases: [top]
+  trade:
+    description: Trade with another player
+    usage: /trade <player|accept|deny|cancel>
+  market:
+    description: Player market
+    usage: /market [sell <price>|my|cancel <id>|search <material>]
+    aliases: [ah]
+  sellshop:
+    description: Sell items to the server shop
+    usage: /sellshop [hand]
+    aliases: [ss, skup]
+
+permissions:
+  belltrade.*:
+    description: All BellTrade permissions
+    default: op
+    children:
+      belltrade.use: true
+      belltrade.market: true
+      belltrade.market.sell: true
+      belltrade.shop: true
+      belltrade.trade: true
+      belltrade.balance: true
+      belltrade.balance.others: true
+      belltrade.pay: true
+      belltrade.baltop: true
+      belltrade.admin: true
+  belltrade.use:
+    description: Open main menu
+    default: true
+  belltrade.balance:
+    description: Check own balance
+    default: true
+  belltrade.balance.others:
+    description: Check other players balance
+    default: op
+  belltrade.pay:
+    description: Pay other players
+    default: true
+  belltrade.baltop:
+    description: View balance leaderboard
+    default: true
+  belltrade.trade:
+    description: Use player trade
+    default: true
+  belltrade.market:
+    description: Browse player market
+    default: true
+  belltrade.market.sell:
+    description: List items on market
+    default: true
+  belltrade.shop:
+    description: Use sell shop
+    default: true
+  belltrade.admin:
+    description: Admin panel and management
+    default: op

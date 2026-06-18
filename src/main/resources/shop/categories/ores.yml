@@ -1,0 +1,64 @@
+id: ores
+icon: IRON_INGOT
+name: "&6Ores & Minerals"
+items:
+  COAL:
+    base-price: 2.0
+    min-price: 0.5
+    max-price: 8.0
+  CHARCOAL:
+    base-price: 1.5
+    min-price: 0.4
+    max-price: 6.0
+  RAW_IRON:
+    base-price: 5.0
+    min-price: 1.0
+    max-price: 20.0
+  IRON_INGOT:
+    base-price: 8.0
+    min-price: 2.0
+    max-price: 30.0
+  RAW_GOLD:
+    base-price: 12.0
+    min-price: 3.0
+    max-price: 40.0
+  GOLD_INGOT:
+    base-price: 18.0
+    min-price: 5.0
+    max-price: 60.0
+  RAW_COPPER:
+    base-price: 3.0
+    min-price: 0.8
+    max-price: 12.0
+  COPPER_INGOT:
+    base-price: 4.0
+    min-price: 1.0
+    max-price: 15.0
+  DIAMOND:
+    base-price: 80.0
+    min-price: 20.0
+    max-price: 200.0
+  EMERALD:
+    base-price: 60.0
+    min-price: 15.0
+    max-price: 150.0
+  LAPIS_LAZULI:
+    base-price: 4.0
+    min-price: 1.0
+    max-price: 15.0
+  REDSTONE:
+    base-price: 2.5
+    min-price: 0.5
+    max-price: 10.0
+  QUARTZ:
+    base-price: 6.0
+    min-price: 1.5
+    max-price: 25.0
+  NETHERITE_SCRAP:
+    base-price: 150.0
+    min-price: 40.0
+    max-price: 400.0
+  NETHERITE_INGOT:
+    base-price: 600.0
+    min-price: 150.0
+    max-price: 1500.0

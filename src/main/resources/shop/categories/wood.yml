@@ -1,0 +1,64 @@
+id: wood
+icon: OAK_LOG
+name: "&2Wood & Building"
+items:
+  OAK_LOG:
+    base-price: 1.0
+    min-price: 0.2
+    max-price: 4.0
+  SPRUCE_LOG:
+    base-price: 1.0
+    min-price: 0.2
+    max-price: 4.0
+  BIRCH_LOG:
+    base-price: 1.0
+    min-price: 0.2
+    max-price: 4.0
+  JUNGLE_LOG:
+    base-price: 1.2
+    min-price: 0.3
+    max-price: 5.0
+  ACACIA_LOG:
+    base-price: 1.0
+    min-price: 0.2
+    max-price: 4.0
+  DARK_OAK_LOG:
+    base-price: 1.2
+    min-price: 0.3
+    max-price: 5.0
+  CHERRY_LOG:
+    base-price: 1.5
+    min-price: 0.3
+    max-price: 6.0
+  MANGROVE_LOG:
+    base-price: 1.2
+    min-price: 0.3
+    max-price: 5.0
+  OAK_PLANKS:
+    base-price: 0.5
+    min-price: 0.1
+    max-price: 2.0
+  COBBLESTONE:
+    base-price: 0.3
+    min-price: 0.05
+    max-price: 1.5
+  STONE:
+    base-price: 0.4
+    min-price: 0.1
+    max-price: 2.0
+  SAND:
+    base-price: 0.5
+    min-price: 0.1
+    max-price: 2.0
+  GRAVEL:
+    base-price: 0.4
+    min-price: 0.1
+    max-price: 2.0
+  GLASS:
+    base-price: 1.5
+    min-price: 0.3
+    max-price: 6.0
+  BRICK:
+    base-price: 2.0
+    min-price: 0.5
+    max-price: 8.0

@@ -1,0 +1,64 @@
+id: mob_drops
+icon: ROTTEN_FLESH
+name: "&cMob Drops"
+items:
+  ROTTEN_FLESH:
+    base-price: 0.5
+    min-price: 0.1
+    max-price: 2.0
+  BONE:
+    base-price: 1.0
+    min-price: 0.2
+    max-price: 4.0
+  STRING:
+    base-price: 1.5
+    min-price: 0.3
+    max-price: 6.0
+  SPIDER_EYE:
+    base-price: 2.0
+    min-price: 0.5
+    max-price: 8.0
+  GUNPOWDER:
+    base-price: 3.0
+    min-price: 0.8
+    max-price: 12.0
+  ENDER_PEARL:
+    base-price: 15.0
+    min-price: 4.0
+    max-price: 50.0
+  BLAZE_ROD:
+    base-price: 12.0
+    min-price: 3.0
+    max-price: 40.0
+  GHAST_TEAR:
+    base-price: 25.0
+    min-price: 6.0
+    max-price: 80.0
+  SLIME_BALL:
+    base-price: 4.0
+    min-price: 1.0
+    max-price: 15.0
+  MAGMA_CREAM:
+    base-price: 6.0
+    min-price: 1.5
+    max-price: 20.0
+  LEATHER:
+    base-price: 2.0
+    min-price: 0.5
+    max-price: 8.0
+  FEATHER:
+    base-price: 1.0
+    min-price: 0.2
+    max-price: 4.0
+  INK_SAC:
+    base-price: 2.0
+    min-price: 0.5
+    max-price: 8.0
+  PRISMARINE_SHARD:
+    base-price: 5.0
+    min-price: 1.0
+    max-price: 20.0
+  PRISMARINE_CRYSTALS:
+    base-price: 8.0
+    min-price: 2.0
+    max-price: 30.0

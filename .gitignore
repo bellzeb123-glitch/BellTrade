@@ -1,0 +1,24 @@
+# Maven
+target/
+
+# Build artifacts (keep repo clean; CI produces JAR)
+*.jar
+!maven-wrapper.jar
+
+# Runtime / local test data
+*.db
+data/
+logs/
+*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS
+Thumbs.db
+Desktop.ini

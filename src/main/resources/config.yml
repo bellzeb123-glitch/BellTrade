@@ -1,0 +1,56 @@
+# BellTrade configuration
+
+language: en
+
+commands:
+  register-economy: true
+
+economy:
+  currency-name: Coins
+  # Use Minecraft-safe symbols: $  ✦  ★  (avoid ¤ — renders as broken glyphs)
+  currency-symbol: "$"
+  format: "&6{symbol}&f{amount} &7{currency}"
+  starting-balance: 100.0
+  max-pay-amount: 1000000.0
+  health:
+    baseline-total: 0
+    check-interval-minutes: 60
+    inflation-high: 1.5
+    inflation-low: 0.7
+    shop-multiplier-high: 0.9
+    shop-multiplier-low: 1.1
+    market-tax-bonus-inflation: 1.0
+
+trade:
+  invite-timeout-seconds: 30
+  max-distance: 10.0
+  max-money-offer: 1000000.0
+  reset-ready-on-change: true
+
+market:
+  max-listings-per-player: 5
+  listing-duration-hours: 48
+  tax-percent: 5.0
+  max-price: 1000000.0
+  items-per-page: 28
+  expire-check-minutes: 15
+  blacklist: []
+
+shop:
+  blacklist: []
+  health-multiplier: 1.0
+  supply-snapshot-minutes: 15
+  supply-sample-max-players: 20
+  supply-window-hours: 24
+  supply-high-threshold: 10000
+  supply-low-threshold: 500
+  supply-factor-min: 0.35
+  supply-factor-max: 1.0
+  demand-window-hours: 6
+  demand-factor-min: 0.85
+  demand-factor-max: 1.2
+
+integrations:
+  placeholderapi: true
+  belllands:
+    trade-require-trust: false

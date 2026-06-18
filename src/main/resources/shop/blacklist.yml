@@ -1,0 +1,7 @@
+# Items that cannot be sold to the server shop (in addition to config shop.blacklist)
+materials:
+  - BEDROCK
+  - BARRIER
+  - COMMAND_BLOCK
+  - STRUCTURE_BLOCK
+  - SPAWNER
