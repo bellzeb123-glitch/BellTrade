@@ -36,9 +36,10 @@ Kompletna ekonomia serwerowa: rynek P2P, bezpieczny trade GUI, inteligentny skup
 
 Pełna kontrola nad ekonomią, brak konfliktów z Essentials, prosty deploy na serwerach Bell (BellLands + BellTrade + BellChat).
 
-### BellTrade Pro (planowany)
+### BellTrade Pro (addon)
 
-Adaptive pricing, analytics, edytor katalogu sklepu z GUI, MySQL, Discord — osobny addon.
+Adaptive pricing, analytics, edytor katalogu z GUI, Discord webhooks — osobny płatny addon.  
+Dokumentacja: `Bell-Ecosystem/docs/belltrade-pro/` · Listing BBB: `promo-bbb.md`
 
 ---
 

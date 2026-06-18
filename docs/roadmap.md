@@ -86,10 +86,11 @@ Szkielet: [`../../BellTrade-Pro/`](../../BellTrade-Pro/) — `BellTradePro.java`
 ### Pro-2
 
 - [x] Discord webhooks (duza sprzedaz, rynek, anomalie)
+- [x] Dokumentacja Pro w `Bell-Ecosystem/docs/belltrade-pro/` (instrukcja, commands, promo-bbb)
+- [ ] BuiltByBit listing ($15–20 USD) — tekst w `docs/belltrade-pro/promo-bbb.md`
 - [ ] MySQL metrics (`HikariCP`, relokowany) — **odlozone** (SQLite + BellSuite)
 - [ ] Custom item providers (ItemsAdder, Nexo)
 - [ ] Per-world markets
-- [ ] BuiltByBit listing ($15–20 USD)
 
 ---
 

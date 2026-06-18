@@ -358,7 +358,10 @@ shop.sell-cancelled: "&cSprzedaz anulowana."
 
 # ── BellTrade Pro (addon) ────────────────────────────────
 pro.no-permission: "&cBrak uprawnien BellTrade Pro."
-pro.usage: "&7Uzycie: &f/btpro admin &7| &f/btpro discord test"
+pro.players-only: "&cTylko dla graczy."
+pro.prompt-cancelled: "&cAnulowano."
+pro.reload-done: "&aPrzeladowano config BellTrade Pro."
+pro.usage: "&7Uzycie: &f/btpro admin &7| &f/btpro reload &7| &f/btpro discord test"
 pro.discord-usage: "&7Uzycie: &f/btpro discord test"
 pro.discord-not-configured: "&cWebhook Discord nie skonfigurowany. Ustaw &fdiscord.enabled&c i &fdiscord.webhook-url&c w config BellTradePro."
 pro.discord-test-sent: "&aWyslano wiadomosc testowa na Discord."
