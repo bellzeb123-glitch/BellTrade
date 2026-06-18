@@ -171,6 +171,12 @@ menu.trade-name: "&bHandel"
 menu.trade-lore:
   - "&7Bezpieczna wymiana"
 menu.trade-hint: "&7Uzyj &e/trade <gracz> &7aby zaprosic gracza."
+menu.trade-help-title: "&8Handel graczy"
+menu.trade-help-lore:
+  - "&7Wyslij prosbe: &e/trade <gracz>"
+  - "&7Odpowiedz: &e/trade accept &7| &e/trade deny"
+  - "&7Anuluj trwajacy handel: &e/trade cancel"
+menu.gui-back-main: "&eWroc do menu glownego"
 menu.shop-name: "&aSklep skupu"
 menu.shop-lore:
   - "&7Sprzedaj przedmioty serwerowi"

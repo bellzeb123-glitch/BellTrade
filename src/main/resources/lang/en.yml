@@ -171,6 +171,12 @@ menu.trade-name: "&bPlayer trade"
 menu.trade-lore:
   - "&7Secure item exchange"
 menu.trade-hint: "&7Use &e/trade <player> &7to invite someone."
+menu.trade-help-title: "&8Player trade"
+menu.trade-help-lore:
+  - "&7Send request: &e/trade <player>"
+  - "&7Respond: &e/trade accept &7| &e/trade deny"
+  - "&7Cancel active trade: &e/trade cancel"
+menu.gui-back-main: "&eBack to main menu"
 menu.shop-name: "&aSell shop"
 menu.shop-lore:
   - "&7Sell items to the server"

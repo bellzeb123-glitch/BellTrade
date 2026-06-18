@@ -13,6 +13,7 @@ public class GuiHolder implements InventoryHolder {
         MARKET,
         SELL_SHOP,
         MAIN_MENU,
+        TRADE_HELP,
         SHOP_PRICE_EDITOR,
         ECONOMY_HEALTH
     }

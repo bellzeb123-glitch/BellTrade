@@ -75,7 +75,11 @@ public class MarketGuiListener implements Listener {
                 gui.openMy(player);
             } else if (raw == MarketGUI.SLOT_BACK) {
                 sellFlow.clear(player);
-                gui.openBrowse(player, 1, holder.getMaterialFilter());
+                if (holder.getView() == MarketGUI.View.MY) {
+                    gui.openBrowse(player, 1, holder.getMaterialFilter());
+                } else {
+                    plugin.getMainMenuGUI().open(player);
+                }
             }
             return;
         }

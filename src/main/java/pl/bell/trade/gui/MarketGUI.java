@@ -112,6 +112,7 @@ public class MarketGUI {
             "page", String.valueOf(page), "max", String.valueOf(maxPage)), List.of()));
         inv.setItem(SLOT_MY, icon(Material.CHEST, lang.getRaw("market.gui-my-listings"), List.of()));
         inv.setItem(SLOT_SELL, icon(Material.EMERALD, lang.getRaw("market.gui-sell"), lang.getList("market.gui-sell-lore")));
+        inv.setItem(SLOT_BACK, icon(Material.ARROW, lang.getRaw("menu.gui-back-main"), List.of()));
     }
 
     public ItemStack listingIcon(Listing listing, LangManager lang, boolean myView) {

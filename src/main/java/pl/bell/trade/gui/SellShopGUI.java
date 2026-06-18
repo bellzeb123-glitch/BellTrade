@@ -191,6 +191,7 @@ public class SellShopGUI {
         }
         inv.setItem(SLOT_INFO, icon(Material.BOOK, lang.getRaw("shop.gui-page",
             "page", String.valueOf(page), "max", String.valueOf(maxPage)), List.of()));
+        inv.setItem(SLOT_BACK, icon(Material.ARROW, lang.getRaw("menu.gui-back-main"), List.of()));
     }
 
     private void addItemNav(Inventory inv, LangManager lang, ShopCategory category, int page, int maxPage) {

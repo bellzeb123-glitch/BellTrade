@@ -33,6 +33,10 @@ public class SellShopGuiListener implements Listener {
         SellShopGUI gui = plugin.getSellShopGUI();
 
         if (holder.getView() == SellShopGUI.View.CATEGORIES) {
+            if (raw == SellShopGUI.SLOT_BACK) {
+                plugin.getMainMenuGUI().open(player);
+                return;
+            }
             if (raw == SellShopGUI.SLOT_PREV && holder.getPage() > 1) {
                 gui.openCategories(player, holder.getPage() - 1);
                 return;

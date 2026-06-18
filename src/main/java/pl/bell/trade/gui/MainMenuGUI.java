@@ -20,10 +20,18 @@ public class MainMenuGUI {
     public static final int SLOT_TRADE = 13;
     public static final int SLOT_SHOP = 15;
     public static final int SLOT_BALANCE = 22;
+    public static final int SLOT_BACK = 48;
+    public static final int SLOT_TRADE_HELP = 22;
 
     public static class MainMenuHolder extends GuiHolder {
         public MainMenuHolder() {
             super(GuiHolder.Type.MAIN_MENU);
+        }
+    }
+
+    public static class TradeHelpHolder extends GuiHolder {
+        public TradeHelpHolder() {
+            super(GuiHolder.Type.TRADE_HELP);
         }
     }
 
@@ -50,6 +58,20 @@ public class MainMenuGUI {
                 "",
                 lang.getRaw("menu.balance-hint")
             )));
+
+        player.openInventory(inv);
+    }
+
+    public void openTradeHelp(Player player) {
+        LangManager lang = plugin.getLangManager();
+        TradeHelpHolder holder = new TradeHelpHolder();
+        Inventory inv = Bukkit.createInventory(holder, 54, lang.colorize(lang.getRaw("menu.trade-help-title")));
+        holder.setInventory(inv);
+        fillGlass(inv);
+
+        inv.setItem(SLOT_TRADE_HELP, item(Material.WRITABLE_BOOK, lang.getRaw("menu.trade-name"),
+            lang.getList("menu.trade-help-lore")));
+        inv.setItem(SLOT_BACK, item(Material.ARROW, lang.getRaw("menu.gui-back-main"), List.of()));
 
         player.openInventory(inv);
     }

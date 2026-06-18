@@ -19,6 +19,10 @@ public class MainMenuGuiListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return;
+        if (event.getInventory().getHolder() instanceof MainMenuGUI.TradeHelpHolder) {
+            handleTradeHelpClick(event, player);
+            return;
+        }
         if (!(event.getInventory().getHolder() instanceof MainMenuGUI.MainMenuHolder)) return;
 
         int raw = event.getRawSlot();
@@ -36,8 +40,7 @@ public class MainMenuGuiListener implements Listener {
             }
             plugin.getMarketGUI().openBrowse(player, 1);
         } else if (raw == MainMenuGUI.SLOT_TRADE) {
-            player.closeInventory();
-            player.sendMessage(plugin.getLangManager().component("menu.trade-hint"));
+            plugin.getMainMenuGUI().openTradeHelp(player);
         } else if (raw == MainMenuGUI.SLOT_SHOP) {
             if (!player.hasPermission("belltrade.shop")) {
                 player.sendMessage(plugin.getLangManager().component("no-permission"));
@@ -53,8 +56,21 @@ public class MainMenuGuiListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onDrag(InventoryDragEvent event) {
-        if (event.getInventory().getHolder() instanceof MainMenuGUI.MainMenuHolder) {
+        if (event.getInventory().getHolder() instanceof MainMenuGUI.MainMenuHolder
+            || event.getInventory().getHolder() instanceof MainMenuGUI.TradeHelpHolder) {
             event.setCancelled(true);
+        }
+    }
+
+    private void handleTradeHelpClick(InventoryClickEvent event, Player player) {
+        int raw = event.getRawSlot();
+        if (raw < 0 || raw >= 54) {
+            if (event.isShiftClick()) event.setCancelled(true);
+            return;
+        }
+        event.setCancelled(true);
+        if (raw == MainMenuGUI.SLOT_BACK) {
+            plugin.getMainMenuGUI().open(player);
         }
     }
 }
