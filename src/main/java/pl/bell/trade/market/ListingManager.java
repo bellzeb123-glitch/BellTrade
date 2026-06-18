@@ -36,8 +36,9 @@ public class ListingManager {
     }
 
     public int getMaxListings(Player player) {
-        if (player.hasPermission("belltrade.market.limit.50")) return 50;
-        if (player.hasPermission("belltrade.market.limit.10")) return 10;
+        if (player.hasPermission("belltradepro.market.limit.unlimited")) return Integer.MAX_VALUE;
+        if (player.hasPermission("belltrade.market.limit.50") || player.hasPermission("belltradepro.market.limit.50")) return 50;
+        if (player.hasPermission("belltrade.market.limit.10") || player.hasPermission("belltradepro.market.limit.10")) return 10;
         return plugin.getConfig().getInt("market.max-listings-per-player", 5);
     }
 
@@ -89,6 +90,9 @@ public class ListingManager {
 
         long now = System.currentTimeMillis();
         long hours = plugin.getConfig().getLong("market.listing-duration-hours", 48);
+        if (seller.hasPermission("belltradepro.market.long-listings")) {
+            hours = plugin.getConfig().getLong("pro.market.listing-duration-hours", 168L);
+        }
         long expires = now + hours * 3_600_000L;
 
         databaseAsyncInsert(seller, toSell.clone(), price, now, expires);
@@ -170,7 +174,12 @@ public class ListingManager {
             }
 
             double price = listing.getPrice();
-            double tax = price * getTaxPercent() / 100.0;
+            double taxPercent = getTaxPercent();
+            Player sellerOnline = Bukkit.getPlayer(listing.getSellerUuid());
+            if (sellerOnline != null && sellerOnline.hasPermission("belltradepro.tax.exempt")) {
+                taxPercent = 0;
+            }
+            double tax = price * taxPercent / 100.0;
             double sellerReceives = price - tax;
 
             var eco = plugin.getCurrencyManager();
@@ -199,7 +208,6 @@ public class ListingManager {
                 "price", eco.format(price),
                 "id", String.valueOf(listingId)));
 
-            Player sellerOnline = Bukkit.getPlayer(listing.getSellerUuid());
             if (sellerOnline != null) {
                 sellerOnline.sendMessage(lang.component("market.sold",
                     "buyer", buyer.getName(),

@@ -178,6 +178,36 @@ public class ListingRepository {
         return counts;
     }
 
+    public boolean extendExpiry(long listingId, long additionalMs) {
+        try (PreparedStatement ps = database.conn().prepareStatement(
+            "UPDATE listings SET expires_at = expires_at + ? WHERE id = ? AND expires_at > ?")) {
+            ps.setLong(1, additionalMs);
+            ps.setLong(2, listingId);
+            ps.setLong(3, System.currentTimeMillis());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Failed to extend listing " + listingId, e);
+            return false;
+        }
+    }
+
+    public List<Listing> findExpiringBefore(long deadlineMs) {
+        List<Listing> list = new ArrayList<>();
+        long now = System.currentTimeMillis();
+        String sql = "SELECT id, seller_uuid, item_blob, price, created_at, expires_at FROM listings "
+            + "WHERE expires_at > ? AND expires_at <= ?";
+        try (PreparedStatement ps = database.conn().prepareStatement(sql)) {
+            ps.setLong(1, now);
+            ps.setLong(2, deadlineMs);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Failed to find expiring listings", e);
+        }
+        return list;
+    }
+
     private Listing mapRow(ResultSet rs) throws SQLException {
         ItemStack item = ItemSerializer.fromBytes(rs.getBytes("item_blob"));
         if (item == null) item = new ItemStack(org.bukkit.Material.BARRIER);

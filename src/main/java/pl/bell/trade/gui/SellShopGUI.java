@@ -159,12 +159,20 @@ public class SellShopGUI {
         ItemStack item = new ItemStack(mat);
         ItemMeta meta = item.getItemMeta();
         meta.displayName(colorize(lang.materialName(mat)));
-        double unit = plugin.getPriceEngine().getCurrentPrice(entry.getItemKey());
+        double unit = pl.bell.trade.api.BellTradeAPI.get().getShopPriceEngine()
+            .getCurrentPrice(player, entry.getItemKey(), null);
         int owned = plugin.getShopManager().countInInventory(player, mat);
 
         List<Component> lore = new ArrayList<>();
-        lore.add(colorize(lang.getRaw("shop.gui-lore-price",
-            "price", plugin.getCurrencyManager().format(unit))));
+        int unitSize = entry.getUnitSize();
+        if (unitSize > 1) {
+            lore.add(colorize(lang.getRaw("shop.gui-lore-price-unit",
+                "price", plugin.getCurrencyManager().format(unit),
+                "unit", String.valueOf(unitSize))));
+        } else {
+            lore.add(colorize(lang.getRaw("shop.gui-lore-price",
+                "price", plugin.getCurrencyManager().format(unit))));
+        }
         lore.add(colorize(lang.getRaw("shop.gui-lore-owned", "amount", String.valueOf(owned))));
         lore.add(Component.empty());
         lore.add(colorize(lang.getRaw("shop.gui-lore-sell-all")));

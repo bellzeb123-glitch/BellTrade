@@ -6,7 +6,9 @@ import pl.bell.trade.storage.Database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -64,6 +66,38 @@ public class PriceHistoryRepository {
             logger.log(Level.SEVERE, "Failed to load recent sell totals", e);
         }
         return totals;
+    }
+
+    public List<Map.Entry<String, Integer>> topSoldItems(long sinceMs, int limit) {
+        List<Map.Entry<String, Integer>> top = new ArrayList<>();
+        try (PreparedStatement ps = database.conn().prepareStatement(
+            "SELECT item_key, COALESCE(SUM(amount), 0) AS total FROM price_history WHERE recorded_at >= ? "
+                + "GROUP BY item_key ORDER BY total DESC LIMIT ?")) {
+            ps.setLong(1, sinceMs);
+            ps.setInt(2, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    top.add(Map.entry(rs.getString("item_key"), rs.getInt("total")));
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Failed to load top sold items", e);
+        }
+        return top;
+    }
+
+    public double averageUnitPrice(String itemKey, long sinceMs) {
+        try (PreparedStatement ps = database.conn().prepareStatement(
+            "SELECT AVG(price) FROM price_history WHERE item_key = ? AND recorded_at >= ?")) {
+            ps.setString(1, itemKey);
+            ps.setLong(2, sinceMs);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Failed to average price for " + itemKey, e);
+        }
+        return 0;
     }
 
     public int countTransactionsSince(long sinceMs) {

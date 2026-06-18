@@ -16,6 +16,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import pl.bell.trade.BellTrade;
+import pl.bell.trade.api.BellTradeProBridge;
 import pl.bell.trade.config.CurrencyConfig;
 import pl.bell.trade.config.LangManager;
 import pl.bell.trade.economy.CurrencyManager;
@@ -42,6 +43,7 @@ public class AdminGUI implements Listener {
     public static final int SLOT_CURRENCY_SYMBOL = 30;
     public static final int SLOT_LANG = 31;
     public static final int SLOT_RELOAD = 32;
+    public static final int SLOT_PRO = 40;
 
     private static class AdminHolder implements InventoryHolder {
         private Inventory inv;
@@ -58,6 +60,10 @@ public class AdminGUI implements Listener {
     }
 
     public void openFor(Player admin) {
+        if (!admin.hasPermission("belltrade.admin")) {
+            admin.sendMessage(plugin.getLangManager().component("no-permission"));
+            return;
+        }
         AdminHolder holder = new AdminHolder();
         LangManager lang = plugin.getLangManager();
         CurrencyConfig cc = plugin.getCurrencyConfig();
@@ -152,6 +158,12 @@ public class AdminGUI implements Listener {
             lang.getRaw("admin.gui-reload-name"),
             lang.getList("admin.gui-reload-lore")));
 
+        if (BellTradeProBridge.isRegistered()) {
+            inv.setItem(SLOT_PRO, item(Material.NETHER_STAR,
+                lang.getRaw("admin.gui-pro-name"),
+                lang.getList("admin.gui-pro-lore")));
+        }
+
         admin.openInventory(inv);
         admin.sendMessage(lang.component("admin.panel-opened"));
     }
@@ -161,6 +173,7 @@ public class AdminGUI implements Listener {
         if (!(event.getWhoClicked() instanceof Player player)) return;
         if (!(event.getInventory().getHolder() instanceof AdminHolder)) return;
         event.setCancelled(true);
+        if (!player.hasPermission("belltrade.admin")) return;
 
         int slot = event.getRawSlot();
         if (slot < 0 || slot >= 54) return;
@@ -188,6 +201,7 @@ public class AdminGUI implements Listener {
                 player.sendMessage(plugin.getLangManager().component("admin.reloaded"));
                 player.closeInventory();
             }
+            case SLOT_PRO -> BellTradeProBridge.openProAdminMenu(player);
         }
     }
 
@@ -236,6 +250,10 @@ public class AdminGUI implements Listener {
 
     public boolean handleChatInput(Player admin, String message) {
         if (!awaitingInput.containsKey(admin.getUniqueId())) return false;
+        if (!admin.hasPermission("belltrade.admin")) {
+            awaitingInput.remove(admin.getUniqueId());
+            return false;
+        }
         LangManager lang = plugin.getLangManager();
 
         if (message.equalsIgnoreCase("cancel") || message.equalsIgnoreCase("anuluj")) {

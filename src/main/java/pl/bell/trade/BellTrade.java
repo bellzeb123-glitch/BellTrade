@@ -43,6 +43,7 @@ import pl.bell.trade.market.ListingRepository;
 import pl.bell.trade.market.MarketSellFlow;
 import pl.bell.trade.shop.ShopManager;
 import pl.bell.trade.storage.Database;
+import pl.bell.trade.api.BellTradeProBridge;
 import pl.bell.trade.trade.TradeManager;
 
 public final class BellTrade extends JavaPlugin {
@@ -324,7 +325,7 @@ public final class BellTrade extends JavaPlugin {
         c.sendMessage("§6  ╚═════╝ ╚══════╝╚══════╝╚══════╝     ");
         c.sendMessage("§r");
         c.sendMessage("§7  Version §f" + getDescription().getVersion() + "  §7│  Author §bBellzeb");
-        c.sendMessage("§7  Status  §aFree §7│ §7Pro §5Coming Soon");
+        c.sendMessage("§7  Status  §aFree §7│ " + (BellTradeProBridge.isRegistered() ? "§5Pro §aActive" : "§7Pro §5Coming Soon"));
         c.sendMessage("§r");
     }
 }

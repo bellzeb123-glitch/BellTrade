@@ -21,6 +21,10 @@ public class ShopPriceEditFlow {
     }
 
     public void startEdit(Player player, String categoryId, Material material) {
+        if (!player.hasPermission("belltrade.admin")) {
+            player.sendMessage(plugin.getLangManager().component("no-permission"));
+            return;
+        }
         var entry = plugin.getShopConfigManager().getItemEntry(material);
         if (entry == null) return;
 
@@ -41,6 +45,10 @@ public class ShopPriceEditFlow {
     public boolean handleChatInput(Player player, String message) {
         PendingEdit edit = pending.get(player.getUniqueId());
         if (edit == null) return false;
+        if (!player.hasPermission("belltrade.admin")) {
+            pending.remove(player.getUniqueId());
+            return false;
+        }
 
         LangManager lang = plugin.getLangManager();
         if (message.equalsIgnoreCase("cancel") || message.equalsIgnoreCase("anuluj")) {

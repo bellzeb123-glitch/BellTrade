@@ -76,16 +76,17 @@ Szkielet: [`../../BellTrade-Pro/`](../../BellTrade-Pro/) — `BellTradePro.java`
 ### Pro-1
 
 - [x] Szkielet repo (`BellTradePro.java`, `pom.xml`, CI, README)
-- [ ] `AdaptivePriceEngine` + `AnomalyDetector`
-- [ ] `AnalyticsGUI` — wykresy, top itemy
-- [ ] `BulkPriceEditorGUI` — masowa edycja cen
-- [ ] **`ShopCatalogEditorGUI`** — dodawanie/usuwanie **kategorii** i **przedmiotów** (zapis do `shop/categories/*.yml`)
-- [ ] Wyższe limity, auto-renew listingów
+- [x] Publiczne API Free (`ShopPriceEngine`, `ShopCatalogService`, `BellTradeProBridge`)
+- [x] `AdaptivePriceEngine` + `AnomalyDetector`
+- [x] `AnalyticsGUI` — top itemy, inflacja, wolumen
+- [x] `BulkPriceEditorGUI` — masowa edycja cen (+/-10%)
+- [x] `ShopCatalogEditorGUI` — kategorie i przedmioty (YAML)
+- [x] Wyższe limity, długie oferty, auto-renew, tax exempt (perms)
 
 ### Pro-2
 
-- [ ] MySQL metrics (`HikariCP`, relokowany)
-- [ ] Discord webhooks
+- [x] Discord webhooks (duza sprzedaz, rynek, anomalie)
+- [ ] MySQL metrics (`HikariCP`, relokowany) — **odlozone** (SQLite + BellSuite)
 - [ ] Custom item providers (ItemsAdder, Nexo)
 - [ ] Per-world markets
 - [ ] BuiltByBit listing ($15–20 USD)

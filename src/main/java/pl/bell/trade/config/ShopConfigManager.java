@@ -92,6 +92,81 @@ public class ShopConfigManager {
         return true;
     }
 
+    public boolean addCategory(String id, Material icon, String displayName) {
+        if (id == null || id.isBlank() || categoryFiles.containsKey(id)) return false;
+        File file = new File(new File(plugin.getDataFolder(), "shop/categories"), sanitizeFileName(id) + ".yml");
+        if (file.exists()) return false;
+
+        YamlConfiguration yaml = new YamlConfiguration();
+        yaml.set("id", id);
+        yaml.set("icon", icon.name());
+        yaml.set("name", displayName != null ? displayName : id);
+        yaml.set("items", null);
+        try {
+            yaml.save(file);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to create category " + id, e);
+            return false;
+        }
+        reload();
+        return true;
+    }
+
+    public boolean removeCategory(String id) {
+        File file = categoryFiles.get(id);
+        if (file == null || !file.exists()) return false;
+        if (!file.delete()) return false;
+        reload();
+        return true;
+    }
+
+    public boolean addItem(String categoryId, Material material, double basePrice, double minPrice, double maxPrice) {
+        return addItem(categoryId, material, basePrice, minPrice, maxPrice, 1);
+    }
+
+    public boolean addItem(String categoryId, Material material, double basePrice, double minPrice, double maxPrice, int unitSize) {
+        File file = categoryFiles.get(categoryId);
+        if (file == null || !file.exists() || material == null) return false;
+        if (itemsByMaterial.containsKey(material.name())) return false;
+
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        String path = "items." + material.name();
+        yaml.set(path + ".base-price", basePrice);
+        yaml.set(path + ".min-price", minPrice);
+        yaml.set(path + ".max-price", maxPrice);
+        yaml.set(path + ".unit-size", Math.max(1, unitSize));
+        try {
+            yaml.save(file);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to add item " + material, e);
+            return false;
+        }
+        reload();
+        return true;
+    }
+
+    public boolean removeItem(String categoryId, Material material) {
+        File file = categoryFiles.get(categoryId);
+        if (file == null || !file.exists() || material == null) return false;
+
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        String path = "items." + material.name();
+        if (!yaml.contains(path)) return false;
+        yaml.set(path, null);
+        try {
+            yaml.save(file);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to remove item " + material, e);
+            return false;
+        }
+        reload();
+        return true;
+    }
+
+    private String sanitizeFileName(String id) {
+        return id.toLowerCase().replaceAll("[^a-z0-9_-]", "_");
+    }
+
     private void ensureShopFiles() {
         File shopDir = new File(plugin.getDataFolder(), "shop");
         File categoriesDir = new File(shopDir, "categories");
@@ -168,7 +243,8 @@ public class ShopConfigManager {
                     double base = entry != null ? entry.getDouble("base-price", 1.0) : 1.0;
                     double min = entry != null ? entry.getDouble("min-price", base * 0.2) : base * 0.2;
                     double max = entry != null ? entry.getDouble("max-price", base * 3.0) : base * 3.0;
-                    ShopItemEntry shopItem = new ShopItemEntry(mat, base, min, max);
+                    int unitSize = entry != null ? entry.getInt("unit-size", 1) : 1;
+                    ShopItemEntry shopItem = new ShopItemEntry(mat, base, min, max, unitSize);
                     items.add(shopItem);
                     itemMap.put(mat.name(), shopItem);
                 }

@@ -138,7 +138,7 @@ public class ShopPriceEditorGUI {
         ItemStack item = new ItemStack(entry.getMaterial());
         ItemMeta meta = item.getItemMeta();
         meta.displayName(colorize(lang.materialName(entry.getMaterial())));
-        double live = plugin.getPriceEngine().getCurrentPrice(entry.getItemKey());
+        double live = pl.bell.trade.api.BellTradeAPI.get().getShopPriceEngine().getCurrentPrice(entry.getItemKey());
         List<Component> lore = new ArrayList<>();
         lore.add(colorize(lang.getRaw("admin.shop-editor-lore-base", "price", String.valueOf(entry.getBasePrice()))));
         lore.add(colorize(lang.getRaw("admin.shop-editor-lore-minmax",

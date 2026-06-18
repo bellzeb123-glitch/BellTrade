@@ -54,3 +54,10 @@ integrations:
   placeholderapi: true
   belllands:
     trade-require-trust: false
+
+# Used when BellTrade Pro is installed (permissions belltradepro.*)
+pro:
+  market:
+    listing-duration-hours: 168
+    auto-renew-hours: 24
+    auto-renew-extension-hours: 168

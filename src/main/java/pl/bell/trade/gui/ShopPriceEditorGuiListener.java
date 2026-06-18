@@ -22,6 +22,10 @@ public class ShopPriceEditorGuiListener implements Listener {
     public void onClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return;
         if (!(event.getInventory().getHolder() instanceof ShopPriceEditorGUI.ShopPriceEditorHolder holder)) return;
+        if (!player.hasPermission("belltrade.admin")) {
+            event.setCancelled(true);
+            return;
+        }
 
         int raw = event.getRawSlot();
         if (raw < 0 || raw >= 54) {

@@ -1,5 +1,6 @@
 package pl.bell.trade.api;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import pl.bell.trade.BellTrade;
@@ -18,10 +19,16 @@ public final class BellTradeAPI {
 
     private final BellTrade plugin;
     private final EconomyService economy;
+    private final ShopCatalogService shopCatalog;
+    private final ShopAnalyticsService shopAnalytics;
+    private final MarketExtensionService marketExtension;
 
     private BellTradeAPI(BellTrade plugin) {
         this.plugin = plugin;
         this.economy = new EconomyService(plugin.getCurrencyManager());
+        this.shopCatalog = new ShopCatalogServiceImpl(plugin.getShopConfigManager());
+        this.shopAnalytics = new ShopAnalyticsServiceImpl(plugin);
+        this.marketExtension = new MarketExtensionServiceImpl(plugin);
     }
 
     public static void init(BellTrade plugin) {
@@ -63,8 +70,33 @@ public final class BellTradeAPI {
         return plugin.getPriceEngine();
     }
 
+    public ShopPriceEngine getShopPriceEngine() {
+        return BellTradeProBridge.resolvePriceEngine(plugin.getPriceEngine());
+    }
+
+    public ShopPriceEngine getDefaultShopPriceEngine() {
+        return plugin.getPriceEngine();
+    }
+
+    public ShopCatalogService getShopCatalog() {
+        return shopCatalog;
+    }
+
+    public ShopAnalyticsService getShopAnalytics() {
+        return shopAnalytics;
+    }
+
+    public MarketExtensionService getMarketExtension() {
+        return marketExtension;
+    }
+
     public EconomyHealthMonitor getEconomyHealthMonitor() {
         return plugin.getEconomyHealthMonitor();
+    }
+
+    public double getInflationPercent() {
+        EconomyHealthMonitor monitor = plugin.getEconomyHealthMonitor();
+        return monitor != null ? monitor.getInflationPercent() : 0;
     }
 
     public void sellToShop(Player player, ItemStack item) {
@@ -72,6 +104,26 @@ public final class BellTradeAPI {
     }
 
     public double getShopPrice(ItemKey key) {
-        return plugin.getPriceEngine().getCurrentPrice(key);
+        return getShopPriceEngine().getCurrentPrice(key);
+    }
+
+    public String getLangRaw(String key, Object... args) {
+        return plugin.getLangManager().getRaw(key, args);
+    }
+
+    public java.util.List<String> getLangList(String key, Object... args) {
+        return plugin.getLangManager().getList(key, args);
+    }
+
+    public Component getLangComponent(String key, Object... args) {
+        return plugin.getLangManager().componentRaw(key, args);
+    }
+
+    public String getMaterialName(org.bukkit.Material material) {
+        return plugin.getLangManager().materialName(material);
+    }
+
+    public Component colorizeText(String text) {
+        return plugin.getLangManager().colorize(text);
     }
 }

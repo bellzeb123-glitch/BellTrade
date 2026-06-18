@@ -5,8 +5,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import pl.bell.trade.BellTrade;
+import pl.bell.trade.api.BellTradeAPI;
+import pl.bell.trade.api.ShopPriceEngine;
 import pl.bell.trade.config.LangManager;
-import pl.bell.trade.engine.PriceEngine;
 import pl.bell.trade.event.ShopSellEvent;
 import pl.bell.trade.model.ItemKey;
 import pl.bell.trade.model.ShopItemEntry;
@@ -50,25 +51,39 @@ public class ShopManager {
             return;
         }
 
-        int toSell = oneStack ? Math.min(64, available) : available;
-        if (maxAmount > 0) toSell = Math.min(toSell, maxAmount);
+        int unitSize = entry.getUnitSize();
+        int maxSell = oneStack ? Math.min(64, available) : available;
+        if (maxAmount > 0) maxSell = Math.min(maxSell, maxAmount);
+
+        int bundles = maxSell / unitSize;
+        if (bundles <= 0) {
+            player.sendMessage(lang.component("shop.nothing-to-sell"));
+            return;
+        }
+        int toSell = bundles * unitSize;
 
         ItemKey key = ItemKey.of(material);
-        PriceEngine engine = plugin.getPriceEngine();
-        double unitPrice = engine.getCurrentPrice(key);
+        ShopPriceEngine engine = BellTradeAPI.get().getShopPriceEngine();
+        double bundlePrice = engine.getCurrentPrice(player, key, null);
         double basePrice = entry.getBasePrice();
-        double total = unitPrice * toSell;
 
         ItemStack removed = removePlainItems(player, material, toSell);
-        if (removed.getAmount() <= 0) {
+        int actualAmount = removed.getAmount();
+        int actualBundles = actualAmount / unitSize;
+        if (actualBundles <= 0) {
+            if (actualAmount > 0) giveOrDrop(player, removed);
             player.sendMessage(lang.component("shop.nothing-to-sell"));
             return;
         }
 
-        int actualAmount = removed.getAmount();
-        total = unitPrice * actualAmount;
+        double total = bundlePrice * actualBundles;
+        int soldItems = actualBundles * unitSize;
+        if (actualAmount > soldItems) {
+            ItemStack extra = new ItemStack(material, actualAmount - soldItems);
+            giveOrDrop(player, extra);
+        }
 
-        ShopSellEvent event = new ShopSellEvent(player, key, actualAmount, basePrice, unitPrice);
+        ShopSellEvent event = new ShopSellEvent(player, key, soldItems, basePrice, bundlePrice, total);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             giveOrDrop(player, removed);
@@ -82,12 +97,12 @@ public class ShopManager {
             return;
         }
 
-        engine.recordSale(key, unitPrice, actualAmount);
+        engine.recordSale(key, bundlePrice, soldItems);
         player.sendMessage(lang.component("shop.sold",
-            "amount", String.valueOf(actualAmount),
+            "amount", String.valueOf(soldItems),
             "item", lang.materialName(material),
             "price", plugin.getCurrencyManager().format(total),
-            "unit", plugin.getCurrencyManager().format(unitPrice)));
+            "unit", plugin.getCurrencyManager().format(bundlePrice)));
     }
 
     public void sellFromHand(Player player) {

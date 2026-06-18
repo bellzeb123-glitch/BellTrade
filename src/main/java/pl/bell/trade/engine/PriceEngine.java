@@ -5,8 +5,9 @@ import pl.bell.trade.BellTrade;
 import pl.bell.trade.config.ShopConfigManager;
 import pl.bell.trade.model.ItemKey;
 import pl.bell.trade.model.ShopItemEntry;
+import pl.bell.trade.api.ShopPriceEngine;
 
-public class PriceEngine {
+public class PriceEngine implements ShopPriceEngine {
 
     public static final String ENGINE_VERSION = "free-1";
 
@@ -28,15 +29,23 @@ public class PriceEngine {
         this.priceHistory = priceHistory;
     }
 
+    @Override
+    public String getEngineVersion() {
+        return ENGINE_VERSION;
+    }
+
+    @Override
     public double getBasePrice(ItemKey key) {
         ShopItemEntry entry = shopConfig.getItemEntry(key.getMaterial());
         return entry != null ? entry.getBasePrice() : 0;
     }
 
+    @Override
     public double getCurrentPrice(ItemKey key) {
         return getCurrentPrice(key, null);
     }
 
+    @Override
     public double getCurrentPrice(ItemKey key, ItemStack stack) {
         ShopItemEntry entry = shopConfig.getItemEntry(key.getMaterial());
         if (entry == null) return 0;
@@ -52,6 +61,7 @@ public class PriceEngine {
         return Math.max(entry.getMinPrice(), Math.min(entry.getMaxPrice(), price));
     }
 
+    @Override
     public void recordSale(ItemKey key, double unitPrice, int amount) {
         supplyTracker.recordSale(key, amount);
         demandTracker.recordSale(key, amount);

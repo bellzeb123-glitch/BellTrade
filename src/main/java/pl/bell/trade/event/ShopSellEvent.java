@@ -14,14 +14,21 @@ public class ShopSellEvent extends PlayerEvent implements Cancellable {
     private final int amount;
     private final double basePrice;
     private final double finalPrice;
+    private final double totalPayout;
     private boolean cancelled;
 
     public ShopSellEvent(Player player, ItemKey itemKey, int amount, double basePrice, double finalPrice) {
+        this(player, itemKey, amount, basePrice, finalPrice, finalPrice * amount);
+    }
+
+    public ShopSellEvent(Player player, ItemKey itemKey, int amount, double basePrice,
+                         double finalPrice, double totalPayout) {
         super(player, false);
         this.itemKey = itemKey;
         this.amount = amount;
         this.basePrice = basePrice;
         this.finalPrice = finalPrice;
+        this.totalPayout = totalPayout;
         this.cancelled = false;
     }
 
@@ -29,7 +36,7 @@ public class ShopSellEvent extends PlayerEvent implements Cancellable {
     public int getAmount() { return amount; }
     public double getBasePrice() { return basePrice; }
     public double getFinalPrice() { return finalPrice; }
-    public double getTotalPayout() { return finalPrice * amount; }
+    public double getTotalPayout() { return totalPayout; }
 
     @Override
     public boolean isCancelled() { return cancelled; }
