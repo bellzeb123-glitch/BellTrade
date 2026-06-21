@@ -35,6 +35,7 @@ import pl.bell.trade.gui.SellShopGuiListener;
 import pl.bell.trade.gui.TradeGUI;
 import pl.bell.trade.gui.TradeGuiListener;
 import pl.bell.trade.integration.BellLandsHook;
+import pl.bell.trade.integration.BellLPIntegration;
 import pl.bell.trade.integration.PlaceholderHook;
 import pl.bell.trade.listener.MarketChatListener;
 import pl.bell.trade.listener.PlayerQuitListener;
@@ -86,7 +87,7 @@ public final class BellTrade extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        printBanner();
+        getServer().getScheduler().runTaskLater(this, this::printBanner, 1L);
 
         saveDefaultConfig();
 
@@ -136,6 +137,7 @@ public final class BellTrade extends JavaPlugin {
         this.bellLandsHook = new BellLandsHook(this);
         this.placeholderHook = new PlaceholderHook(this);
         placeholderHook.register();
+        BellLPIntegration.tryRegister(this);
 
         BellTradeAPI.init(this);
 
@@ -222,6 +224,17 @@ public final class BellTrade extends JavaPlugin {
         if (demandTracker != null) demandTracker.reload();
         if (economyHealthMonitor != null) economyHealthMonitor.reload();
         getServer().getPluginManager().callEvent(new pl.bell.trade.event.BellTradeReloadEvent());
+    }
+
+    /**
+     * Lightweight reload: only YAML configs and lang, without touching
+     * balances, economy trackers, or supply/demand state.
+     */
+    public void reloadConfigs() {
+        reloadConfig();
+        if (currencyConfig != null) currencyConfig.reload();
+        if (langManager != null) langManager.reload();
+        if (shopConfigManager != null) shopConfigManager.reload();
     }
 
     private void registerEcoCommand(String name, EconomyCommand executor) {
@@ -325,6 +338,7 @@ public final class BellTrade extends JavaPlugin {
     }
 
     private void printBanner() {
+        if (org.bukkit.Bukkit.getPluginManager().getPlugin("BellTradePro") != null) return;
         var c = org.bukkit.Bukkit.getConsoleSender();
         c.sendMessage("§r");
         c.sendMessage("§6  ██████╗ ███████╗██╗     ██╗          ");
@@ -335,7 +349,7 @@ public final class BellTrade extends JavaPlugin {
         c.sendMessage("§6  ╚═════╝ ╚══════╝╚══════╝╚══════╝     ");
         c.sendMessage("§r");
         c.sendMessage("§7  Version §f" + getDescription().getVersion() + "  §7│  Author §bBellzeb");
-        c.sendMessage("§7  Status  §aFree §7│ " + (BellTradeProBridge.isRegistered() ? "§5Pro §aActive" : "§7Pro §5Coming Soon"));
+        c.sendMessage("§7  Status  §aFree §7│ §7Player Market & Economy");
         c.sendMessage("§r");
     }
 }

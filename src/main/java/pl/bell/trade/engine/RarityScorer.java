@@ -33,6 +33,9 @@ public class RarityScorer {
     }
 
     public double score(ItemKey key, ItemStack stack) {
+        if (key.isBellItem()) {
+            return Math.min(1.0, 0.85 + (stack != null && stack.hasItemMeta() && stack.getItemMeta().hasEnchants() ? 0.05 : 0));
+        }
         double base = TIER_SCORES.getOrDefault(key.getMaterial(), 0.5);
         if (stack != null && stack.hasItemMeta() && stack.getItemMeta().hasEnchants()) {
             base = Math.min(1.0, base + 0.08);

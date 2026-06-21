@@ -14,7 +14,9 @@ import pl.bell.trade.model.ExpiredMailboxEntry;
 import pl.bell.trade.model.Listing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class MarketGUI {
@@ -40,6 +42,8 @@ public class MarketGUI {
         private final View view;
         private final int page;
         private final String materialFilter;
+        private final Map<Integer, Long> slotToListingId = new HashMap<>();
+        private final Map<Integer, Long> slotToExpiredId = new HashMap<>();
 
         public MarketHolder(View view, int page, String materialFilter) {
             super(GuiHolder.Type.MARKET);
@@ -51,6 +55,8 @@ public class MarketGUI {
         public View getView() { return view; }
         public int getPage() { return page; }
         public String getMaterialFilter() { return materialFilter; }
+        public Map<Integer, Long> getSlotToListingId() { return slotToListingId; }
+        public Map<Integer, Long> getSlotToExpiredId() { return slotToExpiredId; }
     }
 
     private final BellTrade plugin;
@@ -76,6 +82,7 @@ public class MarketGUI {
         List<Listing> listings = plugin.getListingManager().getBrowsePage(page, materialFilter);
         for (int i = 0; i < LISTING_SLOTS.length && i < listings.size(); i++) {
             inv.setItem(LISTING_SLOTS[i], listingIcon(listings.get(i), lang, false));
+            holder.getSlotToListingId().put(LISTING_SLOTS[i], listings.get(i).getId());
         }
 
         addBrowseNav(inv, lang, player, page, maxPage);
@@ -92,6 +99,7 @@ public class MarketGUI {
         List<Listing> listings = plugin.getListingManager().getPlayerListings(player.getUniqueId());
         for (int i = 0; i < LISTING_SLOTS.length && i < listings.size(); i++) {
             inv.setItem(LISTING_SLOTS[i], listingIcon(listings.get(i), lang, true));
+            holder.getSlotToListingId().put(LISTING_SLOTS[i], listings.get(i).getId());
         }
 
         addPlayerNav(inv, lang, player, View.MY, 1, 1);
@@ -115,6 +123,7 @@ public class MarketGUI {
         List<ExpiredMailboxEntry> entries = plugin.getExpiredMailboxManager().getPage(player.getUniqueId(), page);
         for (int i = 0; i < LISTING_SLOTS.length && i < entries.size(); i++) {
             inv.setItem(LISTING_SLOTS[i], expiredIcon(entries.get(i), lang));
+            holder.getSlotToExpiredId().put(LISTING_SLOTS[i], entries.get(i).getId());
         }
 
         addPlayerNav(inv, lang, player, View.EXPIRED, page, maxPage);
@@ -221,22 +230,12 @@ public class MarketGUI {
     }
 
     public long listingIdAtSlot(MarketHolder holder, int rawSlot, Player player) {
-        int index = slotIndex(rawSlot);
-        if (index < 0) return -1;
-        List<Listing> listings = holder.getView() == View.MY
-            ? plugin.getListingManager().getPlayerListings(player.getUniqueId())
-            : plugin.getListingManager().getBrowsePage(holder.getPage(), holder.getMaterialFilter());
-        if (index >= listings.size()) return -1;
-        return listings.get(index).getId();
+        return holder.getSlotToListingId().getOrDefault(rawSlot, -1L);
     }
 
     public long expiredIdAtSlot(MarketHolder holder, int rawSlot, Player player) {
         if (holder.getView() != View.EXPIRED) return -1;
-        int index = slotIndex(rawSlot);
-        if (index < 0) return -1;
-        List<ExpiredMailboxEntry> entries = plugin.getExpiredMailboxManager().getPage(player.getUniqueId(), holder.getPage());
-        if (index >= entries.size()) return -1;
-        return entries.get(index).getId();
+        return holder.getSlotToExpiredId().getOrDefault(rawSlot, -1L);
     }
 
     public static int slotIndex(int rawSlot) {

@@ -9,10 +9,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DemandTracker {
 
+    private static final long CACHE_TTL_MS = 10_000L;
+
+    private record DemandEntry(double factor, long cachedAt) {}
+
     private final BellTrade plugin;
     private final PriceHistoryRepository priceHistory;
     private final ListingRepository listings;
     private final Map<String, Integer> listingCounts = new ConcurrentHashMap<>();
+    private final Map<String, DemandEntry> demandCache = new ConcurrentHashMap<>();
 
     public DemandTracker(BellTrade plugin, PriceHistoryRepository priceHistory, ListingRepository listings) {
         this.plugin = plugin;
@@ -21,12 +26,27 @@ public class DemandTracker {
     }
 
     public void reload() {
+        invalidateAllCache();
         refreshListingCounts();
     }
 
     public double getFactor(ItemKey key) {
+        String cacheKey = key.key();
+        long now = System.currentTimeMillis();
+
+        DemandEntry cached = demandCache.get(cacheKey);
+        if (cached != null && (now - cached.cachedAt()) < CACHE_TTL_MS) {
+            return cached.factor();
+        }
+
+        double factor = computeFactor(key, now);
+        demandCache.put(cacheKey, new DemandEntry(factor, now));
+        return factor;
+    }
+
+    private double computeFactor(ItemKey key, long now) {
         long windowHours = plugin.getConfig().getLong("shop.demand-window-hours", 6);
-        long since = System.currentTimeMillis() - windowHours * 3_600_000L;
+        long since = now - windowHours * 3_600_000L;
         int recentSells = priceHistory.countRecentSells(key.key(), since);
         int activeListings = listingCounts.getOrDefault(key.key(), 0);
 
@@ -40,7 +60,15 @@ public class DemandTracker {
     }
 
     public void recordSale(ItemKey key, int amount) {
-        // price history insert handles persistence; in-memory refresh optional
+        invalidateCache(key);
+    }
+
+    public void invalidateCache(ItemKey key) {
+        demandCache.remove(key.key());
+    }
+
+    public void invalidateAllCache() {
+        demandCache.clear();
     }
 
     public void refreshListingCounts() {

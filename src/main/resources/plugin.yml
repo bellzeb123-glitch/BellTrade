@@ -10,6 +10,7 @@ libraries:
 softdepend:
   - PlaceholderAPI
   - BellLands
+  - BellLP
 
 commands:
   belltrade:
