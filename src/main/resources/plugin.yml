@@ -84,3 +84,18 @@ permissions:
   belltrade.admin:
     description: Admin panel and management
     default: op
+  belltrade.market.limit.10:
+    description: Up to 10 market listings
+    default: false
+  belltrade.market.limit.50:
+    description: Up to 50 market listings
+    default: false
+  belltradepro.market.limit.10:
+    description: Pro — up to 10 market listings
+    default: false
+  belltradepro.market.limit.50:
+    description: Pro — up to 50 market listings (VIP via BellGate)
+    default: false
+  belltradepro.market.limit.unlimited:
+    description: Unlimited market listings
+    default: op

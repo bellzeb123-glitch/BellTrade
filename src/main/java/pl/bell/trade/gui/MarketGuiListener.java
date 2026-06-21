@@ -51,34 +51,63 @@ public class MarketGuiListener implements Listener {
             }
 
             if (MarketGUI.slotIndex(raw) >= 0) {
-                long listingId = gui.listingIdAtSlot(holder, raw, player);
-                if (listingId < 0) return;
-                if (holder.getView() == MarketGUI.View.MY) {
-                    plugin.getListingManager().cancelListing(player, listingId);
-                    gui.openMy(player);
+                if (holder.getView() == MarketGUI.View.EXPIRED) {
+                    long entryId = gui.expiredIdAtSlot(holder, raw, player);
+                    if (entryId < 0) return;
+                    if (plugin.getExpiredMailboxManager().claim(player, entryId)) {
+                        gui.openExpired(player, holder.getPage());
+                    }
                 } else {
-                    plugin.getListingManager().purchase(player, listingId);
-                    gui.openBrowse(player, holder.getPage(), holder.getMaterialFilter());
+                    long listingId = gui.listingIdAtSlot(holder, raw, player);
+                    if (listingId < 0) return;
+                    if (holder.getView() == MarketGUI.View.MY) {
+                        plugin.getListingManager().cancelListing(player, listingId);
+                        gui.openMy(player);
+                    } else {
+                        plugin.getListingManager().purchase(player, listingId);
+                        gui.openBrowse(player, holder.getPage(), holder.getMaterialFilter());
+                    }
                 }
                 return;
             }
 
-            if (raw == MarketGUI.SLOT_PREV && holder.getPage() > 1) {
-                gui.openBrowse(player, holder.getPage() - 1, holder.getMaterialFilter());
-            } else if (raw == MarketGUI.SLOT_NEXT) {
-                int max = plugin.getListingManager().getTotalPages(holder.getMaterialFilter());
-                if (holder.getPage() < max) {
-                    gui.openBrowse(player, holder.getPage() + 1, holder.getMaterialFilter());
-                }
-            } else if (raw == MarketGUI.SLOT_MY) {
-                sellFlow.clear(player);
-                gui.openMy(player);
-            } else if (raw == MarketGUI.SLOT_BACK) {
-                sellFlow.clear(player);
-                if (holder.getView() == MarketGUI.View.MY) {
-                    gui.openBrowse(player, 1, holder.getMaterialFilter());
-                } else {
+            if (holder.getView() == MarketGUI.View.BROWSE) {
+                if (raw == MarketGUI.SLOT_PREV && holder.getPage() > 1) {
+                    gui.openBrowse(player, holder.getPage() - 1, holder.getMaterialFilter());
+                } else if (raw == MarketGUI.SLOT_NEXT) {
+                    int max = plugin.getListingManager().getTotalPages(holder.getMaterialFilter());
+                    if (holder.getPage() < max) {
+                        gui.openBrowse(player, holder.getPage() + 1, holder.getMaterialFilter());
+                    }
+                } else if (raw == MarketGUI.SLOT_MY) {
+                    sellFlow.clear(player);
+                    gui.openMy(player);
+                } else if (raw == MarketGUI.SLOT_EXPIRED) {
+                    sellFlow.clear(player);
+                    gui.openExpired(player, 1);
+                } else if (raw == MarketGUI.SLOT_BACK) {
+                    sellFlow.clear(player);
                     plugin.getMainMenuGUI().open(player);
+                }
+            } else {
+                if (raw == MarketGUI.SLOT_MY) {
+                    sellFlow.clear(player);
+                    gui.openMy(player);
+                } else if (raw == MarketGUI.SLOT_EXPIRED) {
+                    sellFlow.clear(player);
+                    gui.openExpired(player, 1);
+                } else if (raw == MarketGUI.SLOT_BACK) {
+                    sellFlow.clear(player);
+                    gui.openBrowse(player, 1, holder.getMaterialFilter());
+                } else if (holder.getView() == MarketGUI.View.EXPIRED) {
+                    if (raw == MarketGUI.SLOT_PREV && holder.getPage() > 1) {
+                        gui.openExpired(player, holder.getPage() - 1);
+                    } else if (raw == MarketGUI.SLOT_NEXT) {
+                        int max = plugin.getExpiredMailboxManager().getTotalPages(player.getUniqueId());
+                        if (holder.getPage() < max) {
+                            gui.openExpired(player, holder.getPage() + 1);
+                        }
+                    }
                 }
             }
             return;

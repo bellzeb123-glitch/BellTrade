@@ -55,6 +55,22 @@ integrations:
   belllands:
     trade-require-trust: false
 
+# Jednorazowa migracja z EssentialsX (AuctionHouse uzywal Vault → salda w Essentials)
+migration:
+  essentials:
+    # Wzgledem folderu serwera (tam gdzie server.properties), nie CWD
+    userdata-folder: "plugins/Essentials/userdata"
+    # Jesli Essentials usuniete — wgraj backup userdata i podaj np.:
+    # userdata-folder: "plugins/Essentials/userdata"
+    # lub absolutna sciezka DatHost: "/home/dathost/minecraft/backups/Essentials/userdata"
+    mode: replace
+    skip-zero: true
+  sqlite-economy:
+    # Stary backup serwera: databases/economy.db (tabela economy)
+    file: "plugins/databases/economy.db"
+    mode: replace
+    skip-zero: true
+
 # Used when BellTrade Pro is installed (permissions belltradepro.*)
 pro:
   market:

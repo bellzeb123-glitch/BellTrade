@@ -22,12 +22,15 @@ public class ListingManager {
     private final BellTrade plugin;
     private final ListingRepository repository;
     private final TransactionGuard transactionGuard;
+    private final ExpiredMailboxManager expiredMailbox;
     private BukkitTask expireTask;
 
-    public ListingManager(BellTrade plugin, ListingRepository repository, TransactionGuard transactionGuard) {
+    public ListingManager(BellTrade plugin, ListingRepository repository,
+                          TransactionGuard transactionGuard, ExpiredMailboxManager expiredMailbox) {
         this.plugin = plugin;
         this.repository = repository;
         this.transactionGuard = transactionGuard;
+        this.expiredMailbox = expiredMailbox;
         startExpireTask();
     }
 
@@ -165,7 +168,12 @@ public class ListingManager {
             Listing listing = opt.get();
             if (listing.isExpired()) {
                 buyer.sendMessage(lang.component("market.expired"));
-                repository.delete(listingId);
+                try {
+                    expiredMailbox.depositSync(listing.getSellerUuid(), listing.getItem(), listing.getId());
+                    repository.deleteSync(listingId);
+                } catch (SQLException e) {
+                    plugin.getLogger().severe("Failed to move expired listing to mailbox: " + e.getMessage());
+                }
                 return;
             }
             if (listing.getSellerUuid().equals(buyer.getUniqueId())) {
@@ -249,16 +257,18 @@ public class ListingManager {
     private void processExpired() {
         for (Listing listing : repository.findExpired()) {
             try {
+                expiredMailbox.depositSync(listing.getSellerUuid(), listing.getItem(), listing.getId());
                 repository.deleteSync(listing.getId());
             } catch (SQLException e) {
-                plugin.getLogger().severe("Failed to delete expired listing " + listing.getId());
+                plugin.getLogger().severe("Failed to expire listing " + listing.getId() + ": " + e.getMessage());
                 continue;
             }
             Player seller = Bukkit.getPlayer(listing.getSellerUuid());
             if (seller != null && seller.isOnline()) {
-                giveOrDrop(seller, listing.getItem());
-                seller.sendMessage(plugin.getLangManager().component("market.expired-returned",
-                    "id", String.valueOf(listing.getId())));
+                int pending = expiredMailbox.countPending(seller.getUniqueId());
+                seller.sendMessage(plugin.getLangManager().component("market.expired-stored",
+                    "id", String.valueOf(listing.getId()),
+                    "pending", String.valueOf(pending)));
             }
         }
     }

@@ -42,6 +42,13 @@ public class Database {
             st.execute("CREATE INDEX IF NOT EXISTS idx_listings_seller ON listings(seller_uuid)");
             st.execute("CREATE INDEX IF NOT EXISTS idx_listings_expires ON listings(expires_at)");
             st.execute("CREATE INDEX IF NOT EXISTS idx_listings_material ON listings(material)");
+            st.execute("CREATE TABLE IF NOT EXISTS expired_mailbox (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "owner_uuid TEXT NOT NULL, " +
+                "item_blob BLOB NOT NULL, " +
+                "expired_at INTEGER NOT NULL, " +
+                "listing_id INTEGER NOT NULL DEFAULT 0)");
+            st.execute("CREATE INDEX IF NOT EXISTS idx_expired_mailbox_owner ON expired_mailbox(owner_uuid)");
             st.execute("CREATE TABLE IF NOT EXISTS supply_samples (" +
                 "item_key TEXT NOT NULL, quantity INTEGER NOT NULL, sampled_at INTEGER NOT NULL)");
             st.execute("CREATE INDEX IF NOT EXISTS idx_supply_samples_key_time ON supply_samples(item_key, sampled_at)");

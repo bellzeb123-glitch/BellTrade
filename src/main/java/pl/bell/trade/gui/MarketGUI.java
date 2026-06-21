@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import pl.bell.trade.BellTrade;
 import pl.bell.trade.config.LangManager;
+import pl.bell.trade.model.ExpiredMailboxEntry;
 import pl.bell.trade.model.Listing;
 
 import java.util.ArrayList;
@@ -26,13 +27,14 @@ public class MarketGUI {
     };
 
     public static final int SLOT_PREV = 45;
-    public static final int SLOT_INFO = 49;
-    public static final int SLOT_NEXT = 53;
+    public static final int SLOT_EXPIRED = 46;
     public static final int SLOT_MY = 47;
     public static final int SLOT_BACK = 48;
+    public static final int SLOT_INFO = 49;
     public static final int SLOT_SELL = 51;
+    public static final int SLOT_NEXT = 53;
 
-    public enum View { BROWSE, MY }
+    public enum View { BROWSE, MY, EXPIRED }
 
     public static class MarketHolder extends GuiHolder {
         private final View view;
@@ -76,7 +78,7 @@ public class MarketGUI {
             inv.setItem(LISTING_SLOTS[i], listingIcon(listings.get(i), lang, false));
         }
 
-        addNav(inv, lang, page, maxPage, View.BROWSE);
+        addBrowseNav(inv, lang, player, page, maxPage);
         player.openInventory(inv);
     }
 
@@ -92,8 +94,7 @@ public class MarketGUI {
             inv.setItem(LISTING_SLOTS[i], listingIcon(listings.get(i), lang, true));
         }
 
-        inv.setItem(SLOT_BACK, icon(Material.ARROW, lang.getRaw("market.gui-back"), List.of()));
-        inv.setItem(SLOT_SELL, icon(Material.EMERALD, lang.getRaw("market.gui-sell"), lang.getList("market.gui-sell-lore")));
+        addPlayerNav(inv, lang, player, View.MY, 1, 1);
         inv.setItem(SLOT_INFO, icon(Material.BOOK, lang.getRaw("market.gui-my-info",
             "count", String.valueOf(listings.size()),
             "max", String.valueOf(plugin.getListingManager().getMaxListings(player))), List.of()));
@@ -101,7 +102,30 @@ public class MarketGUI {
         player.openInventory(inv);
     }
 
-    private void addNav(Inventory inv, LangManager lang, int page, int maxPage, View view) {
+    public void openExpired(Player player, int page) {
+        int maxPage = plugin.getExpiredMailboxManager().getTotalPages(player.getUniqueId());
+        page = Math.max(1, Math.min(page, maxPage));
+
+        LangManager lang = plugin.getLangManager();
+        MarketHolder holder = new MarketHolder(View.EXPIRED, page, null);
+        Inventory inv = Bukkit.createInventory(holder, 54, lang.colorize(lang.getRaw("market.gui-title-expired")));
+        holder.setInventory(inv);
+
+        fillGlass(inv);
+        List<ExpiredMailboxEntry> entries = plugin.getExpiredMailboxManager().getPage(player.getUniqueId(), page);
+        for (int i = 0; i < LISTING_SLOTS.length && i < entries.size(); i++) {
+            inv.setItem(LISTING_SLOTS[i], expiredIcon(entries.get(i), lang));
+        }
+
+        addPlayerNav(inv, lang, player, View.EXPIRED, page, maxPage);
+        int total = plugin.getExpiredMailboxManager().countPending(player.getUniqueId());
+        inv.setItem(SLOT_INFO, icon(Material.BOOK, lang.getRaw("market.gui-expired-info",
+            "count", String.valueOf(total)), List.of()));
+
+        player.openInventory(inv);
+    }
+
+    private void addBrowseNav(Inventory inv, LangManager lang, Player player, int page, int maxPage) {
         if (page > 1) {
             inv.setItem(SLOT_PREV, icon(Material.ARROW, lang.getRaw("market.gui-prev"), List.of()));
         }
@@ -110,9 +134,45 @@ public class MarketGUI {
         }
         inv.setItem(SLOT_INFO, icon(Material.BOOK, lang.getRaw("market.gui-page",
             "page", String.valueOf(page), "max", String.valueOf(maxPage)), List.of()));
-        inv.setItem(SLOT_MY, icon(Material.CHEST, lang.getRaw("market.gui-my-listings"), List.of()));
+        inv.setItem(SLOT_MY, tabIcon(lang, player, View.MY, false));
+        inv.setItem(SLOT_EXPIRED, tabIcon(lang, player, View.EXPIRED, false));
         inv.setItem(SLOT_SELL, icon(Material.EMERALD, lang.getRaw("market.gui-sell"), lang.getList("market.gui-sell-lore")));
         inv.setItem(SLOT_BACK, icon(Material.ARROW, lang.getRaw("menu.gui-back-main"), List.of()));
+    }
+
+    private void addPlayerNav(Inventory inv, LangManager lang, Player player, View active, int page, int maxPage) {
+        inv.setItem(SLOT_MY, tabIcon(lang, player, View.MY, active == View.MY));
+        inv.setItem(SLOT_EXPIRED, tabIcon(lang, player, View.EXPIRED, active == View.EXPIRED));
+        inv.setItem(SLOT_BACK, icon(Material.ARROW, lang.getRaw("market.gui-back"), List.of()));
+        inv.setItem(SLOT_SELL, icon(Material.EMERALD, lang.getRaw("market.gui-sell"), lang.getList("market.gui-sell-lore")));
+
+        if (active == View.EXPIRED) {
+            if (page > 1) {
+                inv.setItem(SLOT_PREV, icon(Material.ARROW, lang.getRaw("market.gui-prev"), List.of()));
+            }
+            if (page < maxPage) {
+                inv.setItem(SLOT_NEXT, icon(Material.ARROW, lang.getRaw("market.gui-next"), List.of()));
+            }
+        }
+    }
+
+    private ItemStack tabIcon(LangManager lang, Player player, View tab, boolean selected) {
+        int expiredCount = plugin.getExpiredMailboxManager().countPending(player.getUniqueId());
+        Material mat = tab == View.MY
+            ? (selected ? Material.CHEST : Material.ENDER_CHEST)
+            : (selected ? Material.CHEST_MINECART : Material.POISONOUS_POTATO);
+
+        String nameKey = tab == View.MY ? "market.gui-my-listings" : "market.gui-expired-listings";
+        List<String> lore = new ArrayList<>();
+        if (tab == View.EXPIRED && expiredCount > 0) {
+            lore.add(lang.getRaw("market.gui-expired-count", "count", String.valueOf(expiredCount)));
+        }
+        if (selected) {
+            lore.add(lang.getRaw("market.gui-tab-active"));
+        } else {
+            lore.add(lang.getRaw("market.gui-tab-open"));
+        }
+        return icon(mat, lang.getRaw(nameKey), lore);
     }
 
     public ItemStack listingIcon(Listing listing, LangManager lang, boolean myView) {
@@ -142,6 +202,24 @@ public class MarketGUI {
         return display;
     }
 
+    public ItemStack expiredIcon(ExpiredMailboxEntry entry, LangManager lang) {
+        ItemStack display = entry.getItem().clone();
+        ItemMeta meta = display.getItemMeta();
+        if (meta == null) return display;
+
+        List<Component> lore = new ArrayList<>();
+        if (entry.getListingId() > 0) {
+            lore.add(colorize(lang.getRaw("market.gui-lore-id", "id", String.valueOf(entry.getListingId()))));
+        }
+        lore.add(colorize(lang.getRaw("market.gui-lore-expired-at",
+            "time", formatTimeAgo(System.currentTimeMillis() - entry.getExpiredAt()))));
+        lore.add(Component.empty());
+        lore.add(colorize(lang.getRaw("market.gui-lore-claim-hint")));
+        meta.lore(lore);
+        display.setItemMeta(meta);
+        return display;
+    }
+
     public long listingIdAtSlot(MarketHolder holder, int rawSlot, Player player) {
         int index = slotIndex(rawSlot);
         if (index < 0) return -1;
@@ -150,6 +228,15 @@ public class MarketGUI {
             : plugin.getListingManager().getBrowsePage(holder.getPage(), holder.getMaterialFilter());
         if (index >= listings.size()) return -1;
         return listings.get(index).getId();
+    }
+
+    public long expiredIdAtSlot(MarketHolder holder, int rawSlot, Player player) {
+        if (holder.getView() != View.EXPIRED) return -1;
+        int index = slotIndex(rawSlot);
+        if (index < 0) return -1;
+        List<ExpiredMailboxEntry> entries = plugin.getExpiredMailboxManager().getPage(player.getUniqueId(), holder.getPage());
+        if (index >= entries.size()) return -1;
+        return entries.get(index).getId();
     }
 
     public static int slotIndex(int rawSlot) {
@@ -163,6 +250,15 @@ public class MarketGUI {
         if (millis <= 0) return "0m";
         long hours = TimeUnit.MILLISECONDS.toHours(millis);
         long mins = TimeUnit.MILLISECONDS.toMinutes(millis) % 60;
+        if (hours > 0) return hours + "h " + mins + "m";
+        return mins + "m";
+    }
+
+    private String formatTimeAgo(long millis) {
+        if (millis < 60_000) return "<1m";
+        long hours = TimeUnit.MILLISECONDS.toHours(millis);
+        long mins = TimeUnit.MILLISECONDS.toMinutes(millis) % 60;
+        if (hours > 24) return (hours / 24) + "d";
         if (hours > 0) return hours + "h " + mins + "m";
         return mins + "m";
     }

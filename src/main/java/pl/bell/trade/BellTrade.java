@@ -40,6 +40,8 @@ import pl.bell.trade.listener.MarketChatListener;
 import pl.bell.trade.listener.PlayerQuitListener;
 import pl.bell.trade.market.ListingManager;
 import pl.bell.trade.market.ListingRepository;
+import pl.bell.trade.market.ExpiredMailboxManager;
+import pl.bell.trade.market.ExpiredMailboxRepository;
 import pl.bell.trade.market.MarketSellFlow;
 import pl.bell.trade.shop.ShopManager;
 import pl.bell.trade.storage.Database;
@@ -60,6 +62,8 @@ public final class BellTrade extends JavaPlugin {
     private TradeManager tradeManager;
     private TransactionGuard transactionGuard;
     private ListingRepository listingRepository;
+    private ExpiredMailboxRepository expiredMailboxRepository;
+    private ExpiredMailboxManager expiredMailboxManager;
     private ListingManager listingManager;
     private MarketGUI marketGUI;
     private MarketSellFlow marketSellFlow;
@@ -105,7 +109,9 @@ public final class BellTrade extends JavaPlugin {
         this.tradeManager = new TradeManager(this, tradeGUI);
         this.transactionGuard = new TransactionGuard();
         this.listingRepository = new ListingRepository(database, getLogger());
-        this.listingManager = new ListingManager(this, listingRepository, transactionGuard);
+        this.expiredMailboxRepository = new ExpiredMailboxRepository(database, getLogger());
+        this.expiredMailboxManager = new ExpiredMailboxManager(this, expiredMailboxRepository);
+        this.listingManager = new ListingManager(this, listingRepository, transactionGuard, expiredMailboxManager);
         this.marketGUI = new MarketGUI(this);
         this.marketSellFlow = new MarketSellFlow(this);
 
@@ -264,6 +270,10 @@ public final class BellTrade extends JavaPlugin {
 
     public ListingManager getListingManager() {
         return listingManager;
+    }
+
+    public ExpiredMailboxManager getExpiredMailboxManager() {
+        return expiredMailboxManager;
     }
 
     public MarketGUI getMarketGUI() {

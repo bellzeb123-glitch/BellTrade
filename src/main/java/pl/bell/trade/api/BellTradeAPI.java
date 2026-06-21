@@ -123,6 +123,10 @@ public final class BellTradeAPI {
         return plugin.getLangManager().materialName(material);
     }
 
+    public String getCategoryDisplayName(String categoryId, String yamlFallback) {
+        return plugin.getLangManager().categoryDisplayName(categoryId, yamlFallback);
+    }
+
     public Component colorizeText(String text) {
         return plugin.getLangManager().colorize(text);
     }

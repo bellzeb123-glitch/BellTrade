@@ -5,6 +5,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import pl.bell.trade.BellTrade;
 import pl.bell.trade.event.BalanceChangeEvent;
+import pl.bell.trade.migration.ImportMode;
 import pl.bell.trade.storage.Database;
 
 import java.util.HashMap;
@@ -112,5 +113,27 @@ public class CurrencyManager implements EconomyProvider {
     public String getPlayerName(UUID uuid) {
         OfflinePlayer op = Bukkit.getOfflinePlayer(uuid);
         return op.getName() != null ? op.getName() : uuid.toString().substring(0, 8);
+    }
+
+    /**
+     * Import sald z zewnetrznego zrodla (np. Essentials userdata).
+     * @return liczba zaktualizowanych kont
+     */
+    public int importBalances(Map<UUID, Double> amounts, ImportMode mode, String reason) {
+        int updated = 0;
+        for (Map.Entry<UUID, Double> entry : amounts.entrySet()) {
+            UUID uuid = entry.getKey();
+            double src = entry.getValue();
+            double target = switch (mode) {
+                case REPLACE -> src;
+                case ADD -> getBalance(uuid) + src;
+                case MAX -> Math.max(getBalance(uuid), src);
+            };
+            if (target < 0) target = 0;
+            setBalance(uuid, target, reason);
+            updated++;
+        }
+        flush();
+        return updated;
     }
 }

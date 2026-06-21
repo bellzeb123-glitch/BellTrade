@@ -50,6 +50,15 @@ public class MarketCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        if (sub.equals("expired") || sub.equals("claim")) {
+            if (!player.hasPermission("belltrade.market")) {
+                player.sendMessage(lang.component("no-permission"));
+                return true;
+            }
+            plugin.getMarketGUI().openExpired(player, 1);
+            return true;
+        }
+
         if (sub.equals("sell")) {
             if (!player.hasPermission("belltrade.market.sell")) {
                 player.sendMessage(lang.component("no-permission"));
@@ -113,7 +122,7 @@ public class MarketCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return filter(List.of("sell", "my", "cancel", "search"), args[0]);
+            return filter(List.of("sell", "my", "expired", "cancel", "search"), args[0]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("search")) {
             return Arrays.stream(Material.values())
