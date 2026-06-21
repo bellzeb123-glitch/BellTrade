@@ -414,15 +414,16 @@ Identyczny wzorzec jak **BellLands** (nie `messages_*.yml`):
 
 ---
 
-## Baner startowy
+## Baner startowy (OBOWIĄZKOWY)
 
-Zgodnie z [`Bell-Ecosystem/shared/banner-standard.md`](../../Bell-Ecosystem/shared/banner-standard.md):
+Wzorzec referencyjny ekosystemu. Pełna specyfikacja: [`Bell-Ecosystem/shared/banner-standard.md`](../../Bell-Ecosystem/shared/banner-standard.md).
 
-| Pole | Wartość |
-|------|---------|
-| Suffix | `Trade` |
-| Status (Free) | `§aFree §7│ §7Pro §5Coming Soon` |
-| Status (Pro) | `§5Pro §7│ §7Adaptive Economy` |
+| Wersja | Wzorzec | Suffix | Status line |
+|--------|---------|--------|-------------|
+| Free | A | `§f Trade` | `§aFree §7│` + `§5Pro §aActive` lub `§7Pro §5Coming Soon` |
+| Pro | B | `§f Trade §5Pro` | `§5Pro §7│ §7Adaptive Economy` |
+
+`printBanner()` musi być **pierwszym** wywołaniem w `onEnable()`.
 
 ---
 
