@@ -185,6 +185,15 @@ public final class BellTrade extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MainMenuGuiListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(this, tradeManager), this);
 
+        if (getServer().getPluginManager().getPlugin("BellHub") != null) {
+            try {
+                pl.bell.trade.integration.BellHubModule.register(this);
+                getLogger().info("Zarejestrowano modul BellTrade w panelu BellHub.");
+            } catch (Throwable t) {
+                getLogger().warning("Nie udalo sie zarejestrowac modulu BellHub: " + t.getMessage());
+            }
+        }
+
         getLogger().info("BellTrade enabled.");
     }
 

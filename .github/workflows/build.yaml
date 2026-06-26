@@ -21,6 +21,11 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
+    - name: Install bell-hub-api
+      run: |
+        git clone --depth 1 https://github.com/bellzeb123-glitch/bell-hub-api.git /tmp/bell-hub-api
+        mvn -f /tmp/bell-hub-api/pom.xml install -DskipTests -B -q
+
     - name: Budowanie pluginu przez Maven
       run: mvn -B package --file pom.xml
 

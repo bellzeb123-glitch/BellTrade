@@ -11,6 +11,7 @@ softdepend:
   - PlaceholderAPI
   - BellLands
   - BellLP
+  - BellHub
 
 commands:
   belltrade:
