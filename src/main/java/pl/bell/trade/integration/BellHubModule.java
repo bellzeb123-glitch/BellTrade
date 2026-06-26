@@ -60,6 +60,8 @@ public final class BellHubModule implements BellModule {
         };
         stats.add(new Stat("Ekonomia", health.getStatus().name(), statusColor));
         stats.add(new Stat("Waluta", cc.getCurrencyName(), "silver"));
+        String lang = plugin.getConfig().getString("language", "en");
+        stats.add(new Stat("Język", lang.toUpperCase(), "silver"));
         return stats;
     }
 
