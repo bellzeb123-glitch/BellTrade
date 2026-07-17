@@ -1,7 +1,7 @@
-name: BellTrade
-version: '1.26.1.2'
+﻿name: BellTrade
+version: '1.26.2.0'
 main: pl.bell.trade.BellTrade
-api-version: '1.21'
+api-version: '26.2'
 description: Player market, secure trade and smart sell shop with built-in economy
 authors: [Bellzeb]
 libraries:
