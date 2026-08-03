@@ -25,8 +25,13 @@ public class LangManager {
     }
 
     public void reload() {
-        String language = plugin.getConfig().getString("language", "en");
-        lang = loadAndMerge(language);
+        try {
+            String language = plugin.getConfig().getString("language", "en");
+            lang = loadAndMerge(language);
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to reload language — keeping previous", e);
+            if (lang == null) lang = new YamlConfiguration();
+        }
     }
 
     private FileConfiguration loadAndMerge(String langCode) {
@@ -41,12 +46,12 @@ public class LangManager {
         if (base == null) {
             plugin.getLogger().severe("No lang files in jar! Loading from disk.");
             return diskFile.exists()
-                ? YamlConfiguration.loadConfiguration(diskFile)
+                ? loadFromDisk(diskFile)
                 : new YamlConfiguration();
         }
 
         if (diskFile.exists()) {
-            FileConfiguration disk = YamlConfiguration.loadConfiguration(diskFile);
+            FileConfiguration disk = loadFromDisk(diskFile);
             for (String key : disk.getKeys(true)) {
                 if (!disk.isConfigurationSection(key) && base.contains(key)) {
                     base.set(key, disk.get(key));
@@ -62,6 +67,14 @@ public class LangManager {
         }
 
         return base;
+    }
+
+    private static FileConfiguration loadFromDisk(File file) {
+        try (InputStreamReader reader = new InputStreamReader(new java.io.FileInputStream(file), StandardCharsets.UTF_8)) {
+            return YamlConfiguration.loadConfiguration(reader);
+        } catch (Exception e) {
+            return YamlConfiguration.loadConfiguration(file);
+        }
     }
 
     private FileConfiguration loadFromJar(String fileName) {

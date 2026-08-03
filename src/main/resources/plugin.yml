@@ -39,7 +39,7 @@ commands:
   sellshop:
     description: Sell items to the server shop
     usage: /sellshop [hand]
-    aliases: [ss, skup]
+    aliases: [skup]
 
 permissions:
   belltrade.*:

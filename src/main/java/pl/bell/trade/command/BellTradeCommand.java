@@ -51,8 +51,14 @@ public class BellTradeCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(lang.component("no-permission"));
                 return true;
             }
-            plugin.reload();
-            sender.sendMessage(lang.component("reload-success"));
+            try {
+                plugin.reload();
+                sender.sendMessage(lang.component("reload-success"));
+            } catch (Exception e) {
+                plugin.getLogger().severe("Reload failed: " + e.getMessage());
+                e.printStackTrace();
+                sender.sendMessage("§cBellTrade reload failed — see console.");
+            }
             return true;
         }
 
@@ -72,8 +78,14 @@ public class BellTradeCommand implements CommandExecutor, TabCompleter {
             }
             plugin.getConfig().set("language", langCode);
             plugin.saveConfig();
-            plugin.reload();
-            sender.sendMessage(lang.component("language-changed", "lang", langCode.toUpperCase()));
+            try {
+                plugin.reload();
+                sender.sendMessage(lang.component("language-changed", "lang", langCode.toUpperCase()));
+            } catch (Exception e) {
+                plugin.getLogger().severe("Reload failed: " + e.getMessage());
+                e.printStackTrace();
+                sender.sendMessage("§cBellTrade reload failed — see console.");
+            }
             return true;
         }
 

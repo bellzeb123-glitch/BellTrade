@@ -224,16 +224,83 @@ public final class BellTrade extends JavaPlugin {
     }
 
     public void reload() {
-        reloadConfig();
-        if (currencyConfig != null) currencyConfig.reload();
-        if (langManager != null) langManager.reload();
-        if (currencyManager != null) currencyManager.reload();
-        if (shopConfigManager != null) shopConfigManager.reload();
-        if (supplyTracker != null) supplyTracker.reload();
-        if (demandTracker != null) demandTracker.reload();
-        if (economyHealthMonitor != null) economyHealthMonitor.reload();
-        getServer().getPluginManager().callEvent(new pl.bell.trade.event.BellTradeReloadEvent());
+        // #region agent log
+        agentDebugLog("B", "BellTrade.reload:start", "reload begin", "{}");
+        // #endregion
+        try {
+            reloadConfig();
+            // #region agent log
+            agentDebugLog("A", "BellTrade.reload:afterConfig", "reloadConfig ok", "{}");
+            // #endregion
+            if (currencyConfig != null) currencyConfig.reload();
+            if (langManager != null) langManager.reload();
+            // #region agent log
+            agentDebugLog("A", "BellTrade.reload:afterLang", "lang ok", "{}");
+            // #endregion
+            if (currencyManager != null) currencyManager.reload();
+            if (shopConfigManager != null) shopConfigManager.reload();
+            if (supplyTracker != null) supplyTracker.reload();
+            if (demandTracker != null) demandTracker.reload();
+            if (economyHealthMonitor != null) economyHealthMonitor.reload();
+            getServer().getPluginManager().callEvent(new pl.bell.trade.event.BellTradeReloadEvent());
+            // #region agent log
+            agentDebugLog("B", "BellTrade.reload:ok", "reload success", "{}");
+            // #endregion
+        } catch (RuntimeException e) {
+            // #region agent log
+            agentDebugLogEx("B", "BellTrade.reload:fail", "reload failed", e);
+            // #endregion
+            throw e;
+        }
     }
+
+    // #region agent log
+    private void agentDebugLog(String hypothesisId, String location, String message, String dataJson) {
+        try {
+            String json = "{\"sessionId\":\"1a385b\",\"hypothesisId\":\"" + hypothesisId
+                + "\",\"location\":\"" + location + "\",\"message\":\"" + message
+                + "\",\"data\":" + dataJson + ",\"timestamp\":" + System.currentTimeMillis() + "}\n";
+            getLogger().warning("[DBG-1a385b] " + location + " | " + message + " | " + dataJson);
+            java.util.List<java.nio.file.Path> targets = new java.util.ArrayList<>();
+            try { targets.add(getDataFolder().toPath().resolve("debug-1a385b.log")); } catch (Throwable ignored) {}
+            targets.add(java.nio.file.Path.of("debug-1a385b.log"));
+            targets.add(java.nio.file.Path.of("logs/debug-1a385b.log"));
+            targets.add(java.nio.file.Path.of("f:/Projekty/debug-1a385b.log"));
+            for (java.nio.file.Path p : targets) {
+                try {
+                    java.nio.file.Path parent = p.getParent();
+                    if (parent != null) java.nio.file.Files.createDirectories(parent);
+                    java.nio.file.Files.writeString(p, json, java.nio.charset.StandardCharsets.UTF_8,
+                        java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND);
+                } catch (Throwable ignored) {}
+            }
+            try {
+                var c = (java.net.HttpURLConnection) java.net.URI.create(
+                    "http://127.0.0.1:7409/ingest/f03539fa-a7ee-4936-bf6b-029381ab42f4").toURL().openConnection();
+                c.setRequestMethod("POST"); c.setDoOutput(true); c.setConnectTimeout(250); c.setReadTimeout(250);
+                c.setRequestProperty("Content-Type", "application/json");
+                c.setRequestProperty("X-Debug-Session-Id", "1a385b");
+                c.getOutputStream().write(json.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                c.getResponseCode();
+            } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {}
+    }
+    private void agentDebugLogEx(String hypothesisId, String location, String message, Throwable t) {
+        String stack = "";
+        if (t != null) {
+            var sb = new StringBuilder();
+            for (int i = 0; i < Math.min(10, t.getStackTrace().length); i++) {
+                if (i > 0) sb.append(" | ");
+                sb.append(t.getStackTrace()[i].toString());
+            }
+            stack = sb.toString().replace("\\", "/").replace("\"", "'");
+        }
+        String ex = t == null ? "null" : t.getClass().getName();
+        String msg = t == null || t.getMessage() == null ? "" : t.getMessage().replace("\\", "/").replace("\"", "'");
+        agentDebugLog(hypothesisId, location, message,
+            "{\"ex\":\"" + ex + "\",\"msg\":\"" + msg + "\",\"stack\":\"" + stack + "\"}");
+    }
+    // #endregion
 
     /**
      * Lightweight reload: only YAML configs and lang, without touching

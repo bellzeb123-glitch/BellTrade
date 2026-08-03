@@ -40,7 +40,7 @@ Po starcie: `/btrade` (menu), `/btrade admin` (panel).
 | `/btrade` | `belltrade` | Menu główne |
 | `/btrade admin` | — | Panel admina |
 | `/market` | `ah` | Rynek |
-| `/sellshop` | `ss`, `skup` | Sklep skupu |
+| `/sellshop` | `skup` | Sklep skupu |
 | `/trade <gracz>` | — | Handel |
 | `/balance` | `bal`, `money` | Saldo |
 | `/pay` | — | Przelew |

@@ -167,7 +167,7 @@ currency name/symbol, economy health, and more.
 | `/baltop [page]` | `/top` | `belltrade.baltop` | Richest players |
 | `/trade <player\|accept\|deny\|cancel>` | | `belltrade.trade` | P2P trade |
 | `/market [sell\|my\|cancel\|search]` | `/ah` | `belltrade.market` | Player market |
-| `/sellshop [hand]` | `/ss`, `/skup` | `belltrade.shop` | Sell to server shop |
+| `/sellshop [hand]` | `/skup` | `belltrade.shop` | Sell to server shop |
 
 ---
 

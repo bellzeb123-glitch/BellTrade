@@ -1,4 +1,4 @@
-# Maven
+﻿# Maven
 target/
 
 # Build artifacts (keep repo clean; CI produces JAR)
@@ -22,3 +22,6 @@ logs/
 # OS
 Thumbs.db
 Desktop.ini
+
+*.class
+.DS_Store
